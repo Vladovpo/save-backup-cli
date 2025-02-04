@@ -67,7 +67,7 @@ def main():
     check_and_configure()
     while True:
         print("Select an option:")
-        print("1. Add/Delete/Edit a game")
+        print("1. Manage configurations")
         print("2. Restore game's save")
         print("3. Configure backup settings")
         print("4. Exit")

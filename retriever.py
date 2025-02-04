@@ -5,6 +5,16 @@ import subprocess
 games_config_path = 'games.json'
 routes_config_path = 'routes.json'
 
+def get_route(game_name):
+    try:
+        with open(routes_config_path, 'r') as f:
+            routes_config = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        print("No routes found or routes.json is invalid.")
+        return None
+
+    return routes_config.get(game_name, None)
+
 def clean_path(path):
     return path.strip().strip('"')
 
@@ -115,8 +125,9 @@ def main():
         print("1. Add a new game")
         print("2. Delete a game")
         print("3. Edit a game")
-        print("4. Exit")
-        choice = input("Enter your choice (1/2/3/4): ")
+        print("4. List all games")
+        print("5. Exit")
+        choice = input("Enter your choice (1/2/3/4/5): ")
 
         if choice == '1':
             while True:
@@ -136,15 +147,33 @@ def main():
         elif choice == '3':
             print_routes()
             game = input("Enter the name of the game to edit: ")
-            delete_game_from_config(game)
-            new_game_name = input("Enter the new name of the game: ")
-            new_path = input(f"Enter the new full path to {new_game_name} save files: ")
-            new_path = clean_path(new_path)
-            if os.path.exists(new_path):
-                add_game_to_config(new_game_name, new_path)
-            else:
-                print(f"Path '{new_path}' does not exist. Please enter a valid path.")
+            while True:
+                microchoice = input("Enter 'name' to edit the game name or 'route' to edit the save location: ")
+                if microchoice == 'name':
+                    new_game_name = input("Enter the new name of the game: ")
+                    route = get_route(game)
+                    delete_game_from_config(game)
+                    update_games_config(new_game_name)
+                    update_routes_config(new_game_name, route)
+                    break
+                elif microchoice == 'route':
+                    new_path = input(f"Enter the new full path to {game} save files: ")
+                    new_path = clean_path(new_path)
+                    if os.path.exists(new_path):
+                        delete_game_from_config(game)
+                        update_routes_config(game, new_path)
+                        update_games_config(game)
+                        break
+                    else:
+                        print(f"Path '{new_path}' does not exist. Please enter a valid path.")
+                else:
+                    print("Invalid choice. Please enter 'name' or 'route'.")
         elif choice == '4':
+            try:
+                print_routes()
+            except:
+                print('List exception occurred. Try recreating configuration files')
+        elif choice == '5':
             print("Exiting...")
             break
         else:
