@@ -44,19 +44,6 @@ def update_games_config(game):
         json.dump(games_config, f, indent=4)
     print(f"Game '{game}' added to configuration and saved to {games_config_path}")
 
-def delete_windows_task(game_name):
-    task_name = f"BackupTool_{game_name}"
-    command = f"schtasks /delete /tn \"{task_name}\" /f"
-    subprocess.run(command, shell=True, check=True)
-    print(f"Windows task '{task_name}' deleted")
-
-def clear_old_task_if_exists(game_name):
-    task_name = f"BackupTool_{game_name}"
-    command = f"schtasks /query /tn \"{task_name}\""
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if result.returncode == 0:
-        delete_windows_task(game_name)
-
 def remove_game_from_config(game):
     try:
         with open(games_config_path, 'r') as f:
@@ -69,12 +56,10 @@ def remove_game_from_config(game):
         with open(games_config_path, 'w') as f:
             json.dump(games_config, f, indent=4)
         print(f"Game '{game}' removed from configuration and saved to {games_config_path}")
-        delete_windows_task(game)
     else:
         print(f"Game '{game}' not found in configuration")
 
 def add_game_to_config(new_game, save_route):
-    clear_old_task_if_exists(new_game)
     update_routes_config(new_game, save_route)
     update_games_config(new_game)
     print(f"Game '{new_game}' with save route '{save_route}' added to configuration")
