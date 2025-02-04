@@ -1,0 +1,7 @@
+.dist/
+.build/
+BackupPy.spec
+backuptool.exe.spec
+app.json
+games.json
+routes.json
