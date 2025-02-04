@@ -3,6 +3,7 @@ import json
 import subprocess
 
 config_path = 'app.json'
+version = "1.0.1"
 
 def load_config():
     if os.path.exists(config_path):
@@ -85,4 +86,5 @@ def main():
             print("Invalid choice. Please try again.")
 
 if __name__ == "__main__":
+    print(f'App version: {version}')
     main()
